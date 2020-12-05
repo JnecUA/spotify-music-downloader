@@ -1,6 +1,8 @@
 package main
 
 import (
+	"fmt"
+
 	"github.com/PuerkitoBio/goquery"
 	"github.com/geziyor/geziyor"
 	"github.com/geziyor/geziyor/client"
@@ -18,6 +20,6 @@ func main() {
 
 func parseSongs(g *geziyor.Geziyor, r *client.Response) {
 	r.HTMLDoc.Find("div[data-testid='tracklist-row']").Each(func(i int, s *goquery.Selection) {
-
+		fmt.Println(s.Find("aria-colindex='2'").Find("span > span").Text())
 	})
 }
