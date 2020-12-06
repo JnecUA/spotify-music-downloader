@@ -1,27 +1,37 @@
 package main
 
 import (
+	"fmt"
+	"os"
 	"strings"
 
 	"github.com/geziyor/geziyor"
 	"github.com/geziyor/geziyor/client"
 )
 
-func main() {
+func GetTracklist(url string) {
 	geziyor.NewGeziyor(&geziyor.Options{
 		StartRequestsFunc: func(g *geziyor.Geziyor) {
-			g.GetRendered("https://open.spotify.com/playlist/2lfAwrTGw2rbXLJf7elpo9", g.Opt.ParseFunc)
+			g.GetRendered(url, g.Opt.ParseFunc)
 		},
 		ParseFunc: parseSongs,
-		//BrowserEndpoint: "ws://localhost:3000",
 	}).Start()
 }
 
 func parseSongs(g *geziyor.Geziyor, r *client.Response) {
-	tracks_list := strings.Split(strings.Split(string(r.Body), `"tracks"`)[1], ";") //Get track list in json format
-	tracks_list = strings.Split(strings.TrimSpace(tracks_list[0]), `"track":{`)     //Split tracks
-	tracks_list = tracks_list[1:len(tracks_list)]                                   //Delete first elemet without track
+	track_list := strings.Split(strings.Split(string(r.Body), `"tracks"`)[1], ";") //Get track list in json format
+	track_list = strings.Split(strings.TrimSpace(track_list[0]), `"track":{`)      //Split tracks
+	track_list = track_list[1:len(track_list)]
+	track_list = jsonToSongName(track_list)
+	fmt.Println(track_list)
+}
 
+func jsonToSongName(track_list []string) []string {
+	var new_track_list []string
+	for _, track := range track_list {
+		new_track_list = append(new_track_list, findSongName(track)+" - "+findArtistsNames(track))
+	}
+	return new_track_list
 }
 
 // findArtistsNames find artists names from first song in list
@@ -44,4 +54,9 @@ func findSongName(l string) string {
 	song := strings.Split(track, "name")
 	song = strings.Split(song[len(song)-1], `"`)
 	return song[2]
+}
+
+func ParseVideo(g *geziyor.Geziyor, r *client.Response) {
+	f, _ := os.Create("lol.txt")
+	f.Write(r.Body)
 }
