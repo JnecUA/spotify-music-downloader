@@ -19,6 +19,7 @@ def downloadVideo(url):
         ydl.download([url])
 
 if __name__ == "__main__":
+    print("Strating")
     worker = python_module.start()
     #Try test playlist
     worker.call("GetTracklist", "https://open.spotify.com/playlist/3DSrtF2DRfwA1wrXlfGy5N")

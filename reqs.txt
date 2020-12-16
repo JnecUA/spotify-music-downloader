@@ -1,0 +1,8 @@
+ffmpeg==1.4
+ffprobe==0.5
+gothon==0.5.0
+numpy==1.19.4
+PyBindGen==0.21.0
+snakeviz==2.1.0
+tornado==6.1
+youtube-dl==2020.12.5
