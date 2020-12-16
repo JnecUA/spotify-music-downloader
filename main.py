@@ -19,4 +19,4 @@ def downloadVideo(url):
         ydl.download([url])
 
 if __name__ == "__main__":
-    pass
+    print("Strating")
