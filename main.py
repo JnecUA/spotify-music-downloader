@@ -19,23 +19,36 @@ def downloadVideo(url):
     with youtube_dl.YoutubeDL(ydl_opts) as ydl:
         ydl.download([url])
 
+def jsonTracklistToList(tracklist_bytes):
+    tracklist = json.loads(tracklist_bytes)['tracklist']
+    tracklist_data = json.loads(tracklist)
+    listOfSongs = tracklist_data['tracks']['items']
+    songs = []
+    for song in listOfSongs:
+        song = song["track"]
+        song = song["name"] + " - " + ', '.join([artist["name"] for artist in song["album"]["artists"]])
+        songs.append(song)
+    return songs
+
 def GetTracklist(url):
-    process = subprocess.Popen("go run server.go")
     try:
-        response = requests.get(url)
+        process = subprocess.Popen("go run server.go")
+        print("Sending GET request")
+        res = requests.get(url)
  
         # если ответ успешен, исключения задействованы не будут
-        response.raise_for_status()
+        res.raise_for_status()
     except HTTPError as http_err:
         print(f'HTTP error occurred: {http_err}')  # Python 3.6
     except Exception as err:
         print(f'Other error occurred: {err}')  # Python 3.6
     else:
-        return json.loads(response.content)["tracklist"]
+        return jsonTracklistToList(res.content)
     return []
 
 if __name__ == "__main__":
-    print("Strating")
+    print("Strating server Go server")
+    
     tracklist = GetTracklist('http://localhost:8080/get-tracklist-from-playlist-url')
     for track in tracklist:
         downloadVideo(findVideoLink(track))
